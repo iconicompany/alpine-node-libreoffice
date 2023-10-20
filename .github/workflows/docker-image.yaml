@@ -21,7 +21,7 @@ jobs:
         run: |
           echo "::set-output name=HAS_DOCKER_SECRETS::${{ secrets.DOCKERHUB_USERNAME != '' && secrets.DOCKERHUB_TOKEN != '' }}"
       - name: Build the Docker image
-        run: docker build . --file Dockerfile --tag bcgovimages/alpine-node-libreoffice:$(date +%s)
+        run: docker build . --file Dockerfile --tag ${{ github.repository }}:$(date +%s)
   docker-publish:
     needs: docker-build
     runs-on: ubuntu-latest
@@ -39,7 +39,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v3
         with:
-          images: bcgovimages/alpine-node-libreoffice
+          images: ${{ github.repository }}
           # Creates tags based off of branch names and semver tags
           tags: |
             type=ref,event=branch
@@ -56,4 +56,4 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
       - name: Inspect Docker Image
-        run: docker image inspect bcgovimages/alpine-node-libreoffice:latest
+        run: docker image inspect ${{ github.repository }}:latest
